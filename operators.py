@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Any, TypeVar, Generic, Dict, Type
-from datetime import datetime
 
 T = TypeVar('T')
 
@@ -51,8 +50,8 @@ class ConditionOperator(BaseOperator):
 class ExpressionOperator(BaseOperator):
     """Operators for combining conditions (AND, OR)"""
     SYMBOLS = {
-        'AND': lambda x, y: x and y,
-        'OR': lambda x, y: x or y,
+        'AND': lambda x, y: [a and b for a, b in zip(x, y)] if isinstance(x, list) else x and y,
+        'OR': lambda x, y: [a or b for a, b in zip(x, y)] if isinstance(x, list) else x or y,
     }
     
     def __init__(self, expression: str, left_idx: int):
@@ -73,7 +72,7 @@ class ExpressionOperator(BaseOperator):
                 self.function = self.SYMBOLS[symbol]
                 self.remaining = (
                     expression
-                    .replace(f'{symbol}', '')
+                    .replace(f'{symbol}', '', 1)
                     .strip()
                     )
                 return True
@@ -85,7 +84,7 @@ class ExpressionOperator(BaseOperator):
 class ObjectOperator(BaseOperator):
     """Operators for combining data objects (+, -, etc.)"""
     SYMBOLS = {
-        '+': lambda x, y: x + y if isinstance(x, (int, float)) else f"{x} {y}",
+        '+': lambda x, y: x + y if isinstance(x, (int, float, list)) else f"{x} {y}",
         '-': lambda x, y: x - y,
         '*': lambda x, y: x * y,
         '/': lambda x, y: x / y,
@@ -94,7 +93,7 @@ class ObjectOperator(BaseOperator):
     def __init__(self, expression: str, left_idx: int):
         self.expression = expression
         self.symbol = None
-        self.function = None
+        self.function: callable = None
         self.left = left_idx
         self.right = None
         self.remaining: str = None
@@ -103,7 +102,7 @@ class ObjectOperator(BaseOperator):
     def parse(self):
         expression = self.expression.strip()
         for symbol in self.SYMBOLS:
-            if expression.startswith(f"{symbol} "):
+            if expression.startswith(f"{symbol}"):
                 self.symbol = symbol
                 self.right = self.left + 1
                 self.function = self.SYMBOLS[symbol]

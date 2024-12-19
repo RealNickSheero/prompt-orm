@@ -1,13 +1,21 @@
 from typing import Any
-from dataclasses import dataclass
 import ast
 from datetime import datetime
+
+class Attribute:
+    """Represents a field in a data object"""
+    def __init__(self, name: str): 
+        self.name: str = name.strip()
 
 class Value:
     """Represents a value in a condition"""
     def __init__(self, name: str):
-        self.name: str = name.strip()
-        self.processed: Any = self._convert_string(self.name)
+        self.name = name
+        match name:
+            case str():
+                self.processed = self._convert_string(name.strip())
+            case _:
+                self.processed = self.name
     
     @staticmethod
     def _convert_string(s: str) -> Any:
@@ -22,7 +30,3 @@ class Value:
             except ValueError:
                 # Return as string if nothing else works
                 return s
-    
-    def get_value(self) -> Any:
-        """Get the raw value"""
-        return self.processed

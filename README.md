@@ -51,7 +51,7 @@ SELECT title FROM movies WHERE rating > 8.0
 
 ### Complex Conditions:
 ```python
-SELECT title FROM movies WHERE genre = "Action" AND rating > 8.0 OR year >= 2020
+SELECT title FROM state.movies WHERE movies.genre = Action AND movies.rating > 8.0 OR movies.year >= 2020
 ```
 
 ---

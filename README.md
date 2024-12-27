@@ -41,12 +41,12 @@ The library supports SQL-like syntax for data querying.
 
 ### Basic Selection:
 ```python
-SELECT title FROM movies
+SELECT title FROM state.movies
 ```
 
 ### Filtering:
 ```python
-SELECT title FROM movies WHERE rating > 8.0
+SELECT title FROM state.movies WHERE state.rating > 8.0
 ```
 
 ### Complex Conditions:
